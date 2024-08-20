@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 1s ease;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #display {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003d7a;
+        }
+
+        #laps {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #laps li {
+            background-color: #f1f1f1;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stopwatch</h1>
+        <div id="display">00:00:00</div>
+        <div class="buttons">
+            <button id="startStop">Start</button>
+            <button id="lap">Lap</button>
+            <button id="reset">Reset</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        let startStopButton = document.getElementById("startStop");
+        let resetButton = document.getElementById("reset");
+        let lapButton = document.getElementById("lap");
+        let display = document.getElementById("display");
+        let laps = document.getElementById("laps");
+
+        let timerInterval;
+        let isRunning = false;
+        let elapsedTime = 0;
+
+        startStopButton.addEventListener("click", function() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                document.body.style.backgroundColor = "#f4f4f4"; 
+                startStopButton.textContent = "Start";
+            } else {
+                startTimer();
+                document.body.style.backgroundColor = getRandomColor(); 
+                startStopButton.textContent = "Stop";
+            }
+            isRunning = !isRunning;
+        });
+
+        lapButton.addEventListener("click", function() {
+            if (isRunning) {
+                recordLap(elapsedTime);
+            }
+        });
+
+        resetButton.addEventListener("click", function() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            isRunning = false;
+            startStopButton.textContent = "Start";
+            displayTime(elapsedTime);
+            document.body.style.backgroundColor = "#f4f4f4"; 
+            laps.innerHTML = ""; 
+        });
+
+        function startTimer() {
+            let startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(function() {
+                elapsedTime = Date.now() - startTime;
+                displayTime(elapsedTime);
+            }, 1000);
+        }
+
+        function displayTime(time) {
+            let totalSeconds = Math.floor(time / 1000);
+            let hours = Math.floor(totalSeconds / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = totalSeconds % 60;
+
+            display.textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function recordLap(time) {
+            let lapTime = document.createElement("li");
+            lapTime.textContent = display.textContent;
+            laps.appendChild(lapTime);
+        }
+
+        function getRandomColor() {
+            let letters = "0123456789ABCDEF";
+            let color = "#";
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
+</body>
+</html>
